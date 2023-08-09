@@ -1,33 +1,66 @@
-import React, { useState, useEffect } from 'react';
-import { List, ListItem, ListItemText } from '@mui/material';
+import React from 'react';
+import {
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Button,
+} from '@mui/material';
 import styled from 'styled-components';
 
-const StyledList = styled(List)`
-  background-color: #f0f0f0;
+const UsersTableContainer = styled.div`
+  max-width: 600px;
+  margin: auto;
 `;
 
-function UsersList() {
-  const [users, setUsers] = useState([]);
+const UsersTable = ({ users }) => {
+  const handleEdit = (userId) => {
+    // vartotojo redagavimas
+  };
 
-  useEffect(() => {
-    fetch('/registration-service/users') // Pakeiskite į '/api/users'
-      .then((response) => response.json())
-      .then((data) => setUsers(data))
-      .catch((error) => console.error('Error fetching users:', error));
-  }, []);
+  const handleDelete = (userId) => {
+    // vartotojo ištrynimas
+  };
 
   return (
-    <div>
-      <h1>Vartotojų sąrašas</h1>
-      <StyledList>
-        {users.map((user) => (
-          <ListItem key={user.id}>
-            <ListItemText primary={`${user.first_name} ${user.last_name}`} />
-          </ListItem>
-        ))}
-      </StyledList>
-    </div>
+    <>
+      <UsersTableContainer>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Vardas</TableCell>
+                <TableCell>Pavardė</TableCell>
+                <TableCell>El. paštas</TableCell>
+                <TableCell>Gimimo data</TableCell>
+                <TableCell>Veiksmai</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>{user.firstName}</TableCell>
+                  <TableCell>{user.lastName}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.birthDate}</TableCell>
+                  <TableCell>
+                    <Button onClick={() => handleEdit(user.id)}>
+                      Redaguoti
+                    </Button>
+                    <Button onClick={() => handleDelete(user.id)}>
+                      Ištrinti
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </UsersTableContainer>
+    </>
   );
-}
+};
 
-export default UsersList;
+export default UsersTable;

@@ -1,31 +1,58 @@
 import React, { useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { TextField, Button } from '@mui/material';
+import styled from 'styled-components';
 
-function RegistrationForm() {
+const FormContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+  margin: auto;
+`;
+
+const Form = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [age, setAge] = useState('');
 
-  const handleSubmit = () => {
-    // Siųsti POST užklausą į /registration-service/users su įvestais duomenimis
-    // Ši dalis turi būti užpildyta
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // vartotojo sukūrimas
   };
 
   return (
-    <div>
-      <h1>Registracijos forma</h1>
-      <TextField
-        label='Vardas'
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-      />
-      {/* Kitos įvestys */}
-      <Button variant='contained' onClick={handleSubmit}>
-        Registruoti
-      </Button>
-    </div>
+    <FormContainer>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          label='Vardas'
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          required
+        />
+        <TextField
+          label='Pavardė'
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          required
+        />
+        <TextField
+          label='El. paštas'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <TextField
+          label='Amžius'
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
+          required
+        />
+        <Button type='submit' variant='contained' color='primary'>
+          Registruotis
+        </Button>
+      </form>
+    </FormContainer>
   );
-}
+};
 
-export default RegistrationForm;
+export default Form;

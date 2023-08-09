@@ -1,27 +1,29 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
-import UsersList from './pages/UsersList'; // Pakeiskite kelią atitinkamai
-import RegistrationForm from './pages/RegistrationForm'; // Pakeiskite kelią atitinkamai
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import styled from 'styled-components';
+import AdminLogin from './pages/AdminLogin';
+import RegistrationForm from './pages/RegistrationForm';
+import UsersList from './pages/UsersList';
 
-function App() {
+const AppContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
+
+const App = () => {
   return (
     <Router>
-      <nav>
-        <ul>
-          <li>
-            <Link to='/'>Vartotojų sąrašas</Link>
-          </li>
-          <li>
-            <Link to='/register'>Registracija</Link>
-          </li>
-        </ul>
-      </nav>
-      <Switch>
-        <Route path='/' exact component={UsersList} />
-        <Route path='/register' component={RegistrationForm} />
-      </Switch>
+      <AppContainer>
+        <Routes>
+          <Route path='/login' component={AdminLogin} />
+          <Route path='/register' component={RegistrationForm} />
+          <Route path='/users' component={UsersList} />
+        </Routes>
+      </AppContainer>
     </Router>
   );
-}
+};
 
 export default App;
