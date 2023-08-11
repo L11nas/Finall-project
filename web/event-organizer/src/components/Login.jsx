@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Paper } from '@mui/material';
 import styled from 'styled-components';
-
 import { useNavigate } from 'react-router-dom';
 
 const FormContainer = styled(Paper)`
@@ -9,9 +8,10 @@ const FormContainer = styled(Paper)`
   padding: 90px;
   margin: auto;
   margin-top: 100px;
+  background-color: lightblue;
 `;
 
-const AdminLogin = () => {
+const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const history = useNavigate();
@@ -20,8 +20,7 @@ const AdminLogin = () => {
     e.preventDefault();
 
     try {
-      // Sending a connection request to the server
-      const response = await fetch('http://localhost:8080/login', {
+      const response = await fetch('/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,14 +29,9 @@ const AdminLogin = () => {
       });
 
       if (response.ok) {
-        // A response has been received from the server
         const { token } = await response.json();
-
-        // Login data is stored in local storage
         localStorage.setItem('token', token);
-
-        // Redirects to another page
-        history.push('/register');
+        history('/register'); // Using the history function to navigate
       } else {
         console.error('Invalid login data');
       }
@@ -45,11 +39,10 @@ const AdminLogin = () => {
       console.error('Error during login', error);
     }
   };
+
   return (
     <FormContainer elevation={3}>
       <form onSubmit={handleSubmit}>
-        {' '}
-        {}
         <TextField
           label='User name'
           value={username}
@@ -79,4 +72,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default Login;
