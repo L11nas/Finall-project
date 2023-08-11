@@ -1,4 +1,4 @@
-const mysql = require('mysql2/promise'); // Naudokite promisų versiją
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 const db = mysql.createConnection({
@@ -7,7 +7,5 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
 });
-
-// Nebandykite jungtis prie duomenų bazės čia
 
 module.exports = db;

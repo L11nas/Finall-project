@@ -1,29 +1,21 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import styled from 'styled-components';
-import AdminLogin from './pages/AdminLogin';
-import RegistrationForm from './pages/RegistrationForm';
-import UsersList from './pages/UsersList';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-const AppContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-`;
+import AdminLogin from './components/AdminLogin';
+import RegistrationForm from './components/RegistrationForm';
+import UsersList from './components/UsersList';
 
-const App = () => {
-  return (
-    <Router>
-      <AppContainer>
-        <Routes>
-          <Route path='/login' component={AdminLogin} />
-          <Route path='/register' component={RegistrationForm} />
-          <Route path='/users' component={UsersList} />
-        </Routes>
-      </AppContainer>
-    </Router>
-  );
-};
+const routesDefinition = createBrowserRouter([
+  {
+    path: '/',
+
+    children: [
+      { path: '/login', element: <AdminLogin /> },
+      { path: '/register', element: <RegistrationForm /> },
+      { path: '/users', element: <UsersList /> },
+    ],
+  },
+]);
+const App = () => <RouterProvider router={routesDefinition} />;
 
 export default App;
