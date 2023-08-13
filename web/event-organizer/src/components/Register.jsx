@@ -48,7 +48,7 @@ const Form = () => {
 
   return (
     <FormContainer>
-      <h4>REGISTRACIJOS FORMA</h4>
+      <h4>REGISTRATION</h4>
       <form onSubmit={handleSubmit}>
         <TextField
           label='Name'

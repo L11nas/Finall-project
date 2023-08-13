@@ -1,178 +1,299 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Table,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Button,
-} from '@mui/material';
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Add as AddIcon,
-} from '@mui/icons-material';
+import axios from 'axios';
 import styled from 'styled-components';
-
-const UsersTableContainer = styled.div`
-  max-width: 600px;
+import GlobalStyles from '../../GlobalStyles';
+const UsersContainer = styled.div`
+  max-width: 800px;
   margin: auto;
+  padding: 20px;
+`;
+const UserDetails = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
 `;
 
-const StyledTableRow = styled(TableRow)`
-  td:last-child {
-    display: flex;
-    gap: 10px;
-    border: 1px solid #ccc;
-    background-color: #f5f5f5;
-  }
+const UserDetail = styled.div`
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
+
+const FieldName = styled.span`
+  font-weight: bold;
+`;
+
+const UserList = styled.ul`
+  list-style: none;
+  padding: 0;
+`;
+
+const UserListItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+`;
+
+const Button = styled.button`
+  padding: 8px 16px;
+  width: 120px; /* Add this line to set a fixed width */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
   &:hover {
-    background-color: #e0e0e0;
+    background-color: #0056b3;
+  }
+
+  &:active {
+    background-color: #003c80;
   }
 `;
 
-const UsersTable = () => {
+const UsersPage = () => {
   const [users, setUsers] = useState([]);
+  const [newUser, setNewUser] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    age: '',
+  });
+  const [updatedUser, setUpdatedUser] = useState({
+    id: null,
+    first_name: '',
+    last_name: '',
+    email: '',
+    age: '',
+  });
 
   useEffect(() => {
-    fetch('http://localhost:8080/users')
-      .then((response) => response.json())
-      .then((data) => setUsers(data))
-      .catch((error) => console.error('Error retrieving data', error));
+    fetchUsers();
   }, []);
 
-  const handleSaveEdit = async () => {
-    // Implement user update logic here
+  const fetchUsers = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/users/${editingUserId}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(editedUser),
-        }
-      );
-
-      if (response.ok) {
-        // Update user list with edited user data
-        const updatedUsers = users.map((user) =>
-          user.id === editingUserId ? { ...user, ...editedUser } : user
-        );
-        setUsers(updatedUsers);
-        setEditingUserId(null);
-        setEditedUser({
-          first_name: '',
-          last_name: '',
-          email: '',
-          age: '',
-        });
-      } else {
-        console.error('Error updating user');
-      }
+      const response = await axios.get('http://localhost:8080/api/users');
+      setUsers(response.data);
     } catch (error) {
-      console.error('Error during user update', error);
-    }
-  };
-
-  const handleDelete = async (userId) => {
-    try {
-      const response = await fetch(`http://localhost:8080/users/${userId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        // Filter out the deleted user and update the user list
-        const updatedUsers = users.filter((user) => user.id !== userId);
-        setUsers(updatedUsers);
-      } else {
-        console.error('Error deleting user');
-      }
-    } catch (error) {
-      console.error('Error during user deletion', error);
+      console.error('Error fetching users:', error);
     }
   };
 
   const handleCreate = async () => {
     try {
-      const response = await fetch('http://localhost:8080/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editedUser), // Use the editedUser state with new user data
-      });
+      const response = await axios.post(
+        'http://localhost:8080/api/users',
+        newUser
+      );
+      if (response.status === 200) {
+        // Create a new user object with input values
+        const newUserObject = {
+          id: response.data.id, // Assuming your response contains the new user's ID
+          first_name: newUser.first_name,
+          last_name: newUser.last_name,
+          email: newUser.email,
+          age: newUser.age,
+        };
 
-      if (response.ok) {
-        const createdUser = await response.json();
-        // Add the created user to the user list
-        setUsers([...users, createdUser]);
-        setEditedUser({
+        // Add the new user object to the list
+        setUsers([...users, newUserObject]);
+
+        // Reset the input fields
+        setNewUser({
           first_name: '',
           last_name: '',
           email: '',
           age: '',
         });
-      } else {
-        console.error('Error creating user');
       }
     } catch (error) {
-      console.error('Error during user creation', error);
+      console.error('Error creating user:', error);
+    }
+  };
+
+  const handleDelete = async (userId) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/users/${userId}`);
+      setUsers(users.filter((user) => user.id !== userId));
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewUser((prevUser) => ({ ...prevUser, [name]: value }));
+  };
+  const handleUpdatedUserChange = (event) => {
+    const { name, value } = event.target;
+    setUpdatedUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
+  };
+  const handleUpdate = (userId) => {
+    const userToUpdate = users.find((user) => user.id === userId);
+    if (userToUpdate) {
+      setUpdatedUser(userToUpdate);
+    }
+  };
+
+  const handleSaveUpdate = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/api/users/${updatedUser.id}`,
+        updatedUser
+      );
+
+      // Handle response and update the user list if needed
+
+      // Clear the updatedUser state
+      setUpdatedUser({
+        id: null,
+        first_name: '',
+        last_name: '',
+        email: '',
+        age: '',
+      });
+    } catch (error) {
+      console.error('Error updating user:', error);
     }
   };
 
   return (
-    <UsersTableContainer>
-      <Button
-        variant='contained'
-        color='primary'
-        startIcon={<AddIcon />}
-        onClick={handleCreate}
-        style={{ margin: '0 auto 20px', display: 'flex' }}
-      >
-        Create
-      </Button>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>NAME</TableCell>
-              <TableCell>SURNAME</TableCell>
-              <TableCell>EMAIL</TableCell>
-              <TableCell>AGE</TableCell>
-              <TableCell>ACTIONS</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user) => (
-              <StyledTableRow key={user.id}>
-                <TableCell>{user.first_name}</TableCell>
-                <TableCell>{user.last_name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.age}</TableCell>
-                <TableCell>
-                  <Button
-                    onClick={() => handleEdit(user.id)}
-                    startIcon={<EditIcon />}
-                  >
-                    Update
-                  </Button>
-                  <Button
-                    onClick={() => handleDelete(user.id)}
-                    startIcon={<DeleteIcon />}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </UsersTableContainer>
+    <UsersContainer>
+      <div>
+        <h1>Add New User</h1>
+        <input
+          type='text'
+          name='first_name'
+          placeholder='First Name'
+          value={newUser.first_name}
+          onChange={handleInputChange}
+        />
+        <input
+          type='text'
+          name='last_name'
+          placeholder='Last Name'
+          value={newUser.last_name}
+          onChange={handleInputChange}
+        />
+        <input
+          type='email'
+          name='email'
+          placeholder='Email'
+          value={newUser.email}
+          onChange={handleInputChange}
+        />
+        <input
+          type='number'
+          name='age'
+          placeholder='Age'
+          value={newUser.age}
+          onChange={handleInputChange}
+        />
+        <Button type='button' onClick={handleCreate}>
+          Add User
+        </Button>
+      </div>
+
+      <h2>User List</h2>
+      <UserList>
+        {users.map((user) => (
+          <UserListItem key={user.id}>
+            <UserDetails>
+              <UserDetail>
+                <FieldName>First Name:</FieldName>
+                <input
+                  type='text'
+                  name='first_name'
+                  placeholder=''
+                  value={user.first_name}
+                  onChange={(event) => handleInputChange(event, user.id)}
+                />
+              </UserDetail>
+              <UserDetail>
+                <FieldName>Last Name:</FieldName>
+                <input
+                  type='text'
+                  name='last_name'
+                  placeholder=''
+                  value={user.last_name}
+                  onChange={(event) => handleInputChange(event, user.id)}
+                />
+              </UserDetail>
+              <UserDetail>
+                <FieldName>Email:</FieldName>
+                <input
+                  type='email'
+                  name='email'
+                  placeholder=''
+                  value={user.email}
+                  onChange={(event) => handleInputChange(event, user.id)}
+                />
+              </UserDetail>
+              <UserDetail>
+                <FieldName>Age:</FieldName>
+                <input
+                  type='number'
+                  name='age'
+                  placeholder=''
+                  value={user.age}
+                  onChange={(event) => handleInputChange(event, user.id)}
+                />
+              </UserDetail>
+            </UserDetails>
+            <div>
+              <Button onClick={() => handleDelete(user.id)}>Delete</Button>
+              <Button onClick={() => handleUpdate(user.id)}>Update</Button>
+            </div>
+          </UserListItem>
+        ))}
+      </UserList>
+
+      {updatedUser.id && (
+        <div>
+          <h2>Edit User</h2>
+          <input
+            type='text'
+            name='first_name'
+            placeholder='First Name'
+            value={updatedUser.first_name}
+            onChange={handleUpdatedUserChange}
+          />
+          <input
+            type='text'
+            name='last_name'
+            placeholder='Last Name'
+            value={updatedUser.last_name}
+            onChange={handleUpdatedUserChange}
+          />
+          <input
+            type='email'
+            name='email'
+            placeholder='Email'
+            value={updatedUser.email}
+            onChange={handleUpdatedUserChange}
+          />
+          <input
+            type='number'
+            name='age'
+            placeholder='Age'
+            value={updatedUser.age}
+            onChange={handleUpdatedUserChange}
+          />
+          <Button onClick={handleSaveUpdate}>Save</Button>
+        </div>
+      )}
+    </UsersContainer>
   );
 };
 
-export default UsersTable;
+export default UsersPage;
