@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { TextField, Button, Paper } from '@mui/material';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +9,7 @@ const FormContainer = styled(Paper)`
   padding: 90px;
   margin: auto;
   margin-top: 100px;
-  background-color: lightblue;
+  background-color: #2596be;
 `;
 
 const Login = () => {
@@ -18,20 +19,17 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await fetch('/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+      const response = await axios.post('api/login', {
+        username,
+        password,
       });
 
-      if (response.ok) {
-        const { token } = await response.json();
+      if (response.status === 200) {
+        const token = response.data.token;
+        // Store the token in localStorage or a global state management solution
         localStorage.setItem('token', token);
-        history('/register'); // Using the history function to navigate
+        history('/users'); // Redirect to dashboard or other route
       } else {
         console.error('Invalid login data');
       }
@@ -44,10 +42,9 @@ const Login = () => {
     <FormContainer elevation={3}>
       <form onSubmit={handleSubmit}>
         <TextField
-          label='User name'
+          label='Username'
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          required
           fullWidth
         />
         <TextField
@@ -55,7 +52,6 @@ const Login = () => {
           type='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          required
           fullWidth
         />
         <Button

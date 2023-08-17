@@ -3,7 +3,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import GlobalStyles from '../../GlobalStyles';
 const UsersContainer = styled.div`
-  max-width: 800px;
+  max-width: 1000px;
   margin: auto;
   padding: 20px;
 `;
@@ -11,6 +11,8 @@ const UserDetails = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 0;
+  margin: 10px 0;
 `;
 
 const UserDetail = styled.div`
@@ -26,6 +28,7 @@ const FieldName = styled.span`
 const UserList = styled.ul`
   list-style: none;
   padding: 0;
+  margin: 10px 0;
 `;
 
 const UserListItem = styled.li`
@@ -40,7 +43,8 @@ const UserListItem = styled.li`
 
 const Button = styled.button`
   padding: 8px 16px;
-  width: 120px; /* Add this line to set a fixed width */
+  width: 120px;
+  margin-bottom: 5px;
   background-color: #007bff;
   color: white;
   border: none;
@@ -56,7 +60,12 @@ const Button = styled.button`
     background-color: #003c80;
   }
 `;
-
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 5px;
+  margin-top: 10px;
+`;
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({
@@ -101,9 +110,8 @@ const UsersPage = () => {
           email: newUser.email,
           age: newUser.age,
         };
-
+        setUsers([response.data, ...users]);
         // Add the new user object to the list
-        setUsers([...users, newUserObject]);
 
         // Reset the input fields
         setNewUser({
@@ -250,10 +258,12 @@ const UsersPage = () => {
                 />
               </UserDetail>
             </UserDetails>
-            <div>
-              <Button onClick={() => handleDelete(user.id)}>Delete</Button>
-              <Button onClick={() => handleUpdate(user.id)}>Update</Button>
-            </div>
+            <ButtonContainer>
+              <div>
+                <Button onClick={() => handleDelete(user.id)}>Delete</Button>
+                <Button onClick={() => handleUpdate(user.id)}>Update</Button>
+              </div>
+            </ButtonContainer>
           </UserListItem>
         ))}
       </UserList>

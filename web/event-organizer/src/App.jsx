@@ -2,7 +2,7 @@ import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import Login from './components/Login';
-import Register from './components/Register';
+
 import Users from './components/Users';
 
 const routesDefinition = createBrowserRouter([
@@ -11,7 +11,6 @@ const routesDefinition = createBrowserRouter([
 
     children: [
       { path: '/login', element: <Login /> },
-      { path: '/register', element: <Register /> },
       { path: '/users', element: <Users /> },
     ],
   },

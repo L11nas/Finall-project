@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const usersRouter = require('./routes/routes'); // Update the path if needed
+const usersRouter = require('./routes/routes');
 const db = require('./src/db_config/db');
 const server = express();
 
-const port = process.env.PORT || 8080; // Allow port to be set by environment or default to 8080
+const port = process.env.PORT || 8080;
 
 server.use(express.json());
 server.use(cors());

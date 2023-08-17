@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
-import localBgImage from '/sky.jpg'; // Import the local image
+import localBgImage from '/sky.jpg';
 
 const GlobalStyles = createGlobalStyle`
   body {
